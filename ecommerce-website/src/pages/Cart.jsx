@@ -9,6 +9,12 @@ import StripeCheckout from "react-stripe-checkout";
 import { useEffect, useState } from "react";
 import { userRequest } from "../requestMethods";
 import { useNavigate } from "react-router-dom";
+import {
+  decreaseQuantity,
+  increaseQuantity,
+  removeProduct,
+} from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
 
 const KEY =
   "pk_test_51N8R5uSA5cBdjVnyWYYT8swO5Y4xFMjMxRM7psSee4zBpZHtzpXkt2ZIDaNxGhiMw1eYKus9OqtMeAT43cX8FGp000tTHdRKIC";
@@ -30,12 +36,22 @@ const Cart = () => {
         });
         history.push("/success", {
           stripeData: res.data,
-          
         });
       } catch {}
     };
     stripeToken && makeRequest();
   }, [stripeToken, cart.total, history]);
+
+  const dispatch = useDispatch();
+
+  const trashProduct = (product) => {
+    dispatch(removeProduct(product));
+  };
+
+  const handleQuantity = (type, index, product) => {
+    if (type === "inc") dispatch(increaseQuantity(index));
+    else if (type === "dec") dispatch(decreaseQuantity(index));
+  };
 
   return (
     <Container>
@@ -53,14 +69,14 @@ const Cart = () => {
             </Link>
           </TopButton>
           <TopTexts>
-            <TopText>Shopping Bag(2)</TopText>
+            <TopText>Shopping Bag({cart.quantity})</TopText>
             <TopText>Your Wishlist(0)</TopText>
           </TopTexts>
           <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
         <Bottom>
           <Info>
-            {cart.products.map((product) => {
+            {cart.products.map((product, key) => {
               return (
                 <>
                   <Product>
@@ -81,14 +97,25 @@ const Cart = () => {
                     </ProductDetail>
                     <PriceDetail>
                       <ProductAmountContainer>
-                        <i className="fa-solid fa-add" />
+                        <i
+                          className="fa-solid fa-add"
+                          onClick={() => handleQuantity("inc", key, product)}
+                        />
                         <ProductAmount>{product.quantity}</ProductAmount>
-                        <i className="fa-solid fa-minus" />
+                        <i
+                          className="fa-solid fa-minus"
+                          onClick={() => handleQuantity("dec", key, product)}
+                        />
                       </ProductAmountContainer>
                       <ProductPrice>
                         $ {product.price * product.quantity}
                       </ProductPrice>
                     </PriceDetail>
+                    <Trash>
+                      <TrashButton onClick={() => trashProduct(product)}>
+                        <i className="fa-solid fa-trash"></i>
+                      </TrashButton>
+                    </Trash>
                   </Product>
                   <Hr />
                 </>
@@ -198,7 +225,7 @@ const Hr = styled.hr`
 
 const Product = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
 
   ${tablet({ flexDirection: "column" })};
   ${mobile({ flexDirection: "column" })};
@@ -277,6 +304,10 @@ const ProductAmountContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+
+  i {
+    cursor: pointer;
+  }
 `;
 const ProductAmount = styled.div`
   font-size: 24px;
@@ -321,5 +352,17 @@ const Button = styled.button`
   font-weight: 600;
   cursor: pointer;
 `;
-
+const Trash = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const TrashButton = styled.button`
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  cursor: pointer;
+`;
 export default Cart;

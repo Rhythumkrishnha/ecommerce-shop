@@ -50,6 +50,7 @@
 }
 .menuItems {
   margin-right: 25px;
+  cursor: pointer;
 }
 .nav-link {
   text-decoration: none;

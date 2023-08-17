@@ -8,7 +8,7 @@ import { publicRequest } from "../requestMethods";
 const Container = styled.div`
   padding: 20px;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   flex-wrap: wrap;
   padding: 20px;
 `;
@@ -26,6 +26,7 @@ const Products = ({ cat, filters, sort }) => {
             : "http://localhost:5000/api/products"
         );
         setProducts(res.data);
+        console.log(products);
       } catch (err) {}
     };
     getProducts();
@@ -62,7 +63,7 @@ const Products = ({ cat, filters, sort }) => {
     <Container>
       {cat
         ? filteredProducts.map((item) => <Product item={item} key={item.id} />)
-        : popularProducts.map((item) => <Product item={item} key={item.id} />)}
+        : products.map((item) => <Product item={item} key={item.id} />)}
     </Container>
   );
 };

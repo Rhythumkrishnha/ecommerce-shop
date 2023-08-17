@@ -99,7 +99,7 @@ const Slider = () => {
               <Title>{item.title}</Title>
               <Desc>{item.desc}</Desc>
               <Button>
-                <Link className="nav-link" to="/product">
+                <Link className="nav-link" to="/products">
                   SHOP NOW
                 </Link>
               </Button>
